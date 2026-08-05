@@ -7,7 +7,7 @@ live data without asserting on any specific contact's details.
 
 Run with:
     GMAIL_TEST_ACCOUNT=bob@example.com \\
-    TOKEN_DB_PATH=~/.local/share/mcp/gmail/tokens.db \\
+    TOKEN_DB_PATH=~/.local/share/google-accounts-mcp/tokens.db \\
     uv run --extra test pytest tests/test_contacts_integration.py -v
 
 Requires a refresh token issued AFTER contacts.readonly +

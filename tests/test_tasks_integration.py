@@ -7,12 +7,12 @@ account's real lists is ever touched.
 
 Run with:
     GMAIL_TEST_ACCOUNT=bob@example.com \\
-    TOKEN_DB_PATH=~/.local/share/mcp/gmail/tokens.db \\
+    TOKEN_DB_PATH=~/.local/share/google-accounts-mcp/tokens.db \\
     uv run --extra test pytest tests/test_tasks_integration.py -v
 
 Requires:
   * A refresh token stored for GMAIL_TEST_ACCOUNT that was issued AFTER
-    the tasks scope was added to SCOPES (re-run mcp-gmail-reauth against
+    the tasks scope was added to SCOPES (re-run scripts/authorize.py against
     the account if this is the first tasks test run).
   * GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET env vars.
 """
