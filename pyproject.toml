@@ -1,0 +1,65 @@
+[project]
+name = "google-accounts-mcp"
+version = "0.1.0"
+description = "Multi-account Google MCP server: Gmail, Calendar, Drive, Tasks, and Contacts"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Nick Engel", email = "nick@engel.au" }]
+requires-python = ">=3.12"
+keywords = ["mcp", "model-context-protocol", "gmail", "google-calendar", "google-drive", "google-tasks", "google-contacts", "multi-account"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Communications :: Email",
+]
+dependencies = [
+    # <2: mcp 2.0 moved FastMCP out of mcp.server.fastmcp — the whole fleet
+    # is on 1.x (same pin as aussiebb-mcp / notion-mcp).
+    "mcp[cli]>=1.0.0,<2",
+    "google-auth-oauthlib>=1.2.0",
+    "google-api-python-client>=2.150.0",
+    "google-auth-httplib2>=0.2.0",
+    "uvicorn>=0.32.0",
+    # PDF attachment text extraction (extract_attachment_text). pdfplumber
+    # wraps pdfminer.six for text / layout / table extraction. pypdfium2
+    # ships a bundled PDFium shared library — no system poppler needed —
+    # and handles page rasterization for render_attachment_page. Pillow
+    # is a transitive dep of pypdfium2; pinned explicitly because the
+    # JPEG re-encode path uses it directly.
+    "pdfplumber>=0.11",
+    "pypdfium2>=4.30",
+    "pillow>=10.0",
+    # OCR of scanned/image-only PDFs is delegated to the fleet xberg
+    # service over HTTP (2026-08-03; was in-process rapidocr+onnxruntime,
+    # ~220 MB of wheels) — httpx carries the xberg /extract call.
+    "httpx>=0.27",
+]
+
+[project.urls]
+Homepage = "https://github.com/snickery/google-accounts-mcp"
+Issues = "https://github.com/snickery/google-accounts-mcp/issues"
+
+[project.scripts]
+google-accounts-mcp = "google_accounts_mcp.server:main"
+# Legacy alias from the project's original name — existing client
+# registrations and container CMDs that spawn `gmail-mcp` keep working.
+gmail-mcp = "google_accounts_mcp.server:main"
+
+[project.optional-dependencies]
+test = ["pytest>=8.0"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/google_accounts_mcp"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+    "integration: requires GMAIL_TEST_ACCOUNT (live Gmail API tests)",
+]

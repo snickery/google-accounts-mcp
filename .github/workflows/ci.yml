@@ -1,0 +1,22 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - run: uv sync --frozen --extra test
+      # Integration tests self-skip without GMAIL_TEST_ACCOUNT (and a live xberg server), so the full
+      # tests/ tree is safe to run credential-free.
+      - run: uv run pytest tests/ -q
