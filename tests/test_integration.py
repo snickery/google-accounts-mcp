@@ -42,7 +42,7 @@ def test_account():
 @pytest.fixture
 def run_id():
     """A unique tag for test artifacts so parallel runs don't collide."""
-    return f"gmail-mcp-itest-{uuid.uuid4().hex[:8]}"
+    return f"gaccounts-itest-{uuid.uuid4().hex[:8]}"
 
 
 # ===================================================================

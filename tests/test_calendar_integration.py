@@ -96,7 +96,7 @@ class TestEventCrud:
             summary=f"{run_id} integration",
             start=start,
             end=end,
-            description="Created by gmail-mcp integration test",
+            description="Created by google-accounts-mcp integration test",
             account=test_account,
         )
         assert run_id in created

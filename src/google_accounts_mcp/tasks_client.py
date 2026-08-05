@@ -1,4 +1,4 @@
-"""Google Tasks client for gmail-mcp.
+"""Google Tasks client for google-accounts-mcp.
 
 Shares the same ``TokenStore`` as ``GmailClient`` — the same OAuth refresh
 token covers the ``tasks`` scope (see ``config.SCOPES``). Every Gmail
@@ -138,8 +138,6 @@ class TasksClient:
             lines.append(f"  parent:    {task['parent']}")
         if task.get("updated"):
             lines.append(f"  updated:   {task['updated']}")
-        if task.get("webViewLink"):
-            lines.append(f"  link:      {task['webViewLink']}")
         return "\n".join(lines)
 
     # ------------------------------------------------------------------

@@ -12,8 +12,6 @@ you like and address them by name or unique substring. Built on the
 HTTP service with bearer auth. Works with any MCP client.
 
 > Unofficial project, not affiliated with or endorsed by Google.
-> (Formerly published as `gmail-mcp`; the CLI keeps a `gmail-mcp`
-> alias for existing registrations.)
 
 ## Table of Contents
 
@@ -161,7 +159,7 @@ MCP servers** and has two invariants worth knowing:
 
 ### Cross-MCP File Handoff to notion-mcp
 
-`gmail-mcp` and `notion-mcp` share a volume (`/shared` in both
+`google-accounts-mcp` and `notion-mcp` share a volume (`/shared` in both
 containers, host path `~/.local/share/containers/data/mcp-shared/`) so
 files move between servers without base64-through-MCP — in **both
 directions**. Every transfer tool reports the `sha256` of the bytes it

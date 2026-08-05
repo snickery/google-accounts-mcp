@@ -99,7 +99,7 @@ def _run_local_oauth_server(flow: InstalledAppFlow, email_addr: str) -> None:
         start_response("200 OK", [("Content-type", "text/plain; charset=utf-8")])
         captured["uri"] = wsgiref.util.request_uri(environ)
         return [
-            b"OAuth flow complete for gmail-mcp. You may close this tab.",
+            b"OAuth flow complete for google-accounts-mcp. You may close this tab.",
         ]
 
     server = wsgiref.simple_server.make_server(
@@ -180,7 +180,7 @@ def main():
         authorize_one(email_addr, store)
 
     print(f"\nAll {len(emails)} account(s) authorized. Token database: {DB_PATH}")
-    print("Remember to run: systemctl --user restart gmail-mcp.service")
+    print("Remember to restart the server so cached credentials refresh.")
 
 
 if __name__ == "__main__":

@@ -1,4 +1,4 @@
-"""Google Contacts (People API) client for gmail-mcp.
+"""Google Contacts (People API) client for google-accounts-mcp.
 
 Shares the same ``TokenStore`` as ``GmailClient`` — the same OAuth refresh
 token covers the ``contacts`` + ``contacts.other.readonly`` scopes (see

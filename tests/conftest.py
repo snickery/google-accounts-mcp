@@ -1,4 +1,4 @@
-"""Shared fixtures for gmail-mcp tests."""
+"""Shared fixtures for google-accounts-mcp tests."""
 
 import base64
 import os

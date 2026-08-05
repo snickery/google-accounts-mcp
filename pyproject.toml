@@ -44,9 +44,6 @@ Issues = "https://github.com/snickery/google-accounts-mcp/issues"
 
 [project.scripts]
 google-accounts-mcp = "google_accounts_mcp.server:main"
-# Legacy alias from the project's original name — existing client
-# registrations and container CMDs that spawn `gmail-mcp` keep working.
-gmail-mcp = "google_accounts_mcp.server:main"
 
 [project.optional-dependencies]
 test = ["pytest>=8.0"]

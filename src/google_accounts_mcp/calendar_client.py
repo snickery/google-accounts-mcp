@@ -1,4 +1,4 @@
-"""Google Calendar client for gmail-mcp.
+"""Google Calendar client for google-accounts-mcp.
 
 Shares the same ``TokenStore`` as ``GmailClient`` — the same OAuth refresh
 token covers gmail.modify, drive.file, and calendar.events scopes (see
