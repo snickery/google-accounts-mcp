@@ -1,4 +1,4 @@
-"""Generate OCR-test PDF fixtures for gmail-mcp tests.
+"""Generate OCR-test PDF fixtures for google-accounts-mcp tests.
 
 Two fixtures:
   scanned.pdf — 2 pages, IMAGE-ONLY (rendered text baked into a bitmap,
