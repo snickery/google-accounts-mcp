@@ -481,11 +481,23 @@ container layout (`/data`); set them explicitly for local runs.
 | `GOOGLE_CLIENT_ID` | _(required)_ | OAuth 2.0 client ID. |
 | `GOOGLE_CLIENT_SECRET` | _(required)_ | OAuth 2.0 client secret. |
 | `TOKEN_DB_PATH` | `/data/tokens.db` | SQLite DB holding per-account refresh tokens. |
+| `GOOGLE_AUTH_URL` | *(unset)* | Optional [google-auth](#token-broker-mode-optional) token broker base URL. When set, tokens come from the broker and `TOKEN_DB_PATH` / `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` are unused. |
+| `GOOGLE_AUTH_BEARER` | *(unset)* | This server's bearer for the broker. Required when `GOOGLE_AUTH_URL` is set. |
 | `ATTACHMENTS_DIR` | `/data/attachments` | Root for staged attachments and downloaded files. |
 | `DEFAULT_ACCOUNT` | *(empty)* | Account used when a tool's `account` parameter is empty. Empty falls back to the sole authorized account. |
 | `DRIVE_ACCOUNT` | *(empty)* | Account hosting the shared Drive folder. Required only for the `drive_*` tools. |
 | `DRIVE_FOLDER_NAME` | `mcp-google-accounts` | Name of the shared Drive folder. |
 | `PORT` | `8321` | HTTP port the server listens on. |
+
+### Token broker mode (optional)
+
+By default the server keeps its own refresh tokens (`TOKEN_DB_PATH`, written by
+`scripts/authorize.py`) and needs the OAuth client id and secret. If you run a
+google-auth token broker, set `GOOGLE_AUTH_URL` and `GOOGLE_AUTH_BEARER`
+instead: the server then holds no refresh tokens or client secret and asks the
+broker for short-lived access tokens. In that mode the account list is whatever
+the broker shares with this server, accounts are added and re-authorised in the
+broker, and a re-authorisation takes effect without restarting this server.
 
 ## Architecture
 

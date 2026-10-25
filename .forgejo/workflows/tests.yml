@@ -1,0 +1,30 @@
+# Unit-test job: runs the pytest suite on every push/PR. Identical across the
+# first-party MCP repos.
+# Credential-free by design: integration/live tests self-skip without their
+# env vars — never add secrets here. Python = .python-version, else 3.13
+# (the Containerfile base). Forgejo ignores .github/workflows while
+# .forgejo/workflows exists, so this is the one that runs on the forge.
+name: tests
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  pytest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv + Python
+        run: |
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+          py="$(cat .python-version 2>/dev/null || echo 3.13)"
+          echo "UV_PYTHON=$py" >> "$GITHUB_ENV"
+          "$HOME/.local/bin/uv" python install "$py"
+
+      - name: pytest
+        run: uv run --isolated --frozen --extra test python -m pytest -q

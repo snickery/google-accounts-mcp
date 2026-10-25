@@ -14,7 +14,6 @@ import pytest
 
 from google_accounts_mcp.tasks_client import TasksClient
 
-
 # ===================================================================
 # Tier 1 — pure helpers
 # ===================================================================

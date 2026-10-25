@@ -14,7 +14,6 @@ import pytest
 
 from tests.conftest import make_message
 
-
 # ---------------------------------------------------------------------------
 # Helpers for mocking the chained googleapiclient builder calls.
 # ---------------------------------------------------------------------------
@@ -284,8 +283,10 @@ class TestDraftEmail:
                ]})
         # ..._fetch_drive_bytes uses get_media + next_chunk. Mock the chunked
         # downloader path by patching MediaIoBaseDownload.
+        from unittest.mock import MagicMock as MM
+        from unittest.mock import patch
+
         import google_accounts_mcp.gmail_client as gc
-        from unittest.mock import patch, MagicMock as MM
         downloader = MM()
         downloader.next_chunk.return_value = (None, True)
 
@@ -1450,7 +1451,7 @@ class TestExtractAttachmentTextOcr:
     ):
         # OCR is delegated to xberg — stub the client boundary; the request
         # shape is covered by test_pdf_read.py's mocked-HTTP suite.
-        from google_accounts_mcp import pdf_read as _pdf_read
+        from mcp_server_kit import pdf as _pdf_read
 
         monkeypatch.setattr(
             _pdf_read, "xberg_ocr_pages",

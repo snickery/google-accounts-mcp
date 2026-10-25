@@ -41,6 +41,12 @@ DEFAULT_ACCOUNT = os.environ.get("DEFAULT_ACCOUNT", "")
 # works without it.
 DRIVE_ACCOUNT = os.environ.get("DRIVE_ACCOUNT", "")
 DRIVE_FOLDER_NAME = os.environ.get("DRIVE_FOLDER_NAME", "mcp-google-accounts")
+# Optional google-auth token broker. When GOOGLE_AUTH_URL is set the server
+# holds no refresh tokens or client secret: it asks the broker for short-lived
+# access tokens (bearer = GOOGLE_AUTH_BEARER) and TOKEN_DB_PATH /
+# GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET are unused.
+GOOGLE_AUTH_URL = os.environ.get("GOOGLE_AUTH_URL", "")
+GOOGLE_AUTH_BEARER = os.environ.get("GOOGLE_AUTH_BEARER", "")
 GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID", "")
 GOOGLE_CLIENT_SECRET = os.environ.get("GOOGLE_CLIENT_SECRET", "")
 PORT = int(os.environ.get("PORT", "8321"))

@@ -24,12 +24,11 @@ from __future__ import annotations
 import re
 
 from google_auth_httplib2 import AuthorizedHttp
-from googleapiclient.discovery import build
 
-from google_accounts_mcp.auth import TokenStore
+from google_accounts_mcp._google_api import build
+from google_accounts_mcp.auth import TokenStore, make_store
 from google_accounts_mcp.config import DB_PATH, DEFAULT_ACCOUNT
 from google_accounts_mcp.gmail_client import _HTTP_TIMEOUT, _RetryingHttp
-
 
 _DATE_ONLY_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 
@@ -49,7 +48,7 @@ _RESPONSE_STATUS_MAP = {
 
 class CalendarClient:
     def __init__(self, store: TokenStore | None = None):
-        self.store = store or TokenStore(DB_PATH)
+        self.store = store or make_store()
         self._services: dict = {}
 
     # ------------------------------------------------------------------

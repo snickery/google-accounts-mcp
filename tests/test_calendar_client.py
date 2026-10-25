@@ -12,8 +12,7 @@ from __future__ import annotations
 
 import pytest
 
-from google_accounts_mcp.calendar_client import CalendarClient, _RESPONSE_STATUS_MAP
-
+from google_accounts_mcp.calendar_client import _RESPONSE_STATUS_MAP, CalendarClient
 
 # ===================================================================
 # Tier 1 — pure helpers

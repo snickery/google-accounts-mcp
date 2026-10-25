@@ -1,5 +1,4 @@
 import base64
-import email.utils
 import hashlib
 import html
 import io
@@ -14,12 +13,16 @@ from pathlib import Path
 
 import httplib2
 from google_auth_httplib2 import AuthorizedHttp
-from googleapiclient.discovery import build
-from googleapiclient.errors import HttpError
-from googleapiclient.http import MediaInMemoryUpload, MediaIoBaseDownload
+from mcp_server_kit import pdf as pdf_read
+from mcp_server_kit.files import atomic_create
 
-from google_accounts_mcp import pdf_read
-from google_accounts_mcp.auth import TokenStore
+from google_accounts_mcp._google_api import (
+    MediaInMemoryUpload,
+    MediaIoBaseDownload,
+    build,
+    http_error,
+)
+from google_accounts_mcp.auth import make_store
 from google_accounts_mcp.config import (
     ATTACHMENTS_DIR,
     DB_PATH,
@@ -28,7 +31,6 @@ from google_accounts_mcp.config import (
     DRIVE_FOLDER_NAME,
     SHARED_DIR,
 )
-
 
 # Connection-level errors that mean a pooled keepalive socket has gone
 # stale rather than a real API failure. ConnectionResetError /
@@ -98,7 +100,7 @@ class _RetryingHttp(httplib2.Http):
 
 class GmailClient:
     def __init__(self):
-        self.store = TokenStore(DB_PATH)
+        self.store = make_store()
         self._services: dict = {}
         self._drive_service = None
         self._drive_folder_id: str | None = None
@@ -107,38 +109,8 @@ class GmailClient:
     def _sha256(data: bytes) -> str:
         return hashlib.sha256(data).hexdigest()
 
-    @staticmethod
-    def _atomic_create(root: Path, filename: str, data: bytes) -> Path:
-        """Write ``data`` to a file under ``root`` whose name does not
-        collide with an existing file. Starts with ``filename`` and, on
-        collision, appends ``-2``, ``-3``, ... before the extension. The
-        create-then-write is atomic (O_CREAT|O_EXCL) so parallel writers
-        do not overwrite each other. Callers must ensure ``filename`` is
-        a bare filename (no path components)."""
-        stem, ext = os.path.splitext(filename)
-        root.mkdir(parents=True, exist_ok=True)
-        for i in range(0, 1001):
-            candidate = root / (filename if i == 0 else f"{stem}-{i + 1}{ext}")
-            try:
-                fd = os.open(
-                    candidate, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o644,
-                )
-            except FileExistsError:
-                continue
-            try:
-                with os.fdopen(fd, "wb") as fp:
-                    fp.write(data)
-            except Exception:
-                try:
-                    candidate.unlink()
-                except FileNotFoundError:
-                    pass
-                raise
-            return candidate
-        raise RuntimeError(
-            f"Could not find a free filename for '{filename}' in {root} "
-            f"(tried up to -1000)."
-        )
+    # Shared-mount writes: collision-safe -2/-3 naming, never overwrite (mcp_server_kit.files).
+    _atomic_create = staticmethod(atomic_create)
 
     def list_shared_files(self, filter: str = "") -> str:
         """List files currently staged in the cross-MCP shared mount
@@ -729,7 +701,7 @@ class GmailClient:
                 fileId=name_or_id,
                 fields="id, name, mimeType, size, parents",
             ).execute()
-        except HttpError as e:
+        except http_error() as e:
             raise ValueError(f"Drive file '{name_or_id}' not found.") from e
         if folder_id not in (f.get("parents") or []):
             raise ValueError(
@@ -899,7 +871,7 @@ class GmailClient:
                     }
                     for p in parts
                 ]
-            except HttpError as e:
+            except http_error() as e:
                 out[mid] = f"error: {e}"
         import json as _json
         with_files = sum(
@@ -933,7 +905,7 @@ class GmailClient:
                 msg = service.users().messages().get(
                     userId="me", id=mid, format="full",
                 ).execute()
-            except HttpError:
+            except http_error():
                 continue
             if want_attachment:
                 parts = self._find_attachments(msg.get("payload", {}))
@@ -1101,7 +1073,7 @@ class GmailClient:
     EXTRACT_TEXT_MAX_BYTES = 200_000
 
     # Kept as a method alias for backward compatibility — the parser
-    # itself lives in pdf_read (shared with notion-mcp).
+    # itself lives in mcp_server_kit.pdf (shared with notion-mcp and mail-archive-mcp).
     _parse_page_spec = staticmethod(pdf_read.parse_page_spec)
 
     def extract_attachment_text(
@@ -1117,7 +1089,7 @@ class GmailClient:
         """Extract text from a PDF attachment without writing the bytes
         to disk. Returns a JSON document with the shape described in the
         tool docstring. Non-PDF attachments are rejected. Extraction
-        semantics (modes, OCR tiers) live in :mod:`google_accounts_mcp.pdf_read`."""
+        semantics (modes, OCR tiers) live in :mod:`mcp_server_kit.pdf`."""
         import json as _json
 
         # Fail fast on bad options before spending an API round-trip.

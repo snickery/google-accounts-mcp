@@ -5,8 +5,9 @@ project dep. Re-run after changing the text so the checked-in fixture
 matches what the tests expect.
 """
 from pathlib import Path
-from reportlab.pdfgen import canvas
+
 from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
 
 out = Path(__file__).parent / "sample.pdf"
 c = canvas.Canvas(str(out), pagesize=letter)

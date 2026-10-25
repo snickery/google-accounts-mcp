@@ -147,8 +147,9 @@ class TestUploadAndAttach:
             except Exception:
                 pass
             # Clean up the uploaded file.
-            from google_accounts_mcp.config import ATTACHMENTS_DIR
             from pathlib import Path
+
+            from google_accounts_mcp.config import ATTACHMENTS_DIR
             (Path(ATTACHMENTS_DIR) / "uploads" / filename).unlink(missing_ok=True)
 
 

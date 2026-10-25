@@ -1,6 +1,6 @@
 [project]
 name = "google-accounts-mcp"
-version = "0.1.0"
+version = "0.2.0"
 description = "Multi-account Google MCP server: Gmail, Calendar, Drive, Tasks, and Contacts"
 readme = "README.md"
 license = "MIT"
@@ -16,22 +16,16 @@ classifiers = [
     "Topic :: Communications :: Email",
 ]
 dependencies = [
-    # <2: mcp 2.0 moved FastMCP out of mcp.server.fastmcp — the whole fleet
-    # is on 1.x (same pin as aussiebb-mcp / notion-mcp).
-    "mcp[cli]>=1.0.0,<2",
+    # The kit pins the MCP SDK range (mcp<2) for every server built on it.
+    # [pdf]: pdfplumber + pypdfium2 + pillow for extract_attachment_text / render_attachment_page.
+    "mcp-server-kit[pdf]>=0.1,<0.2",
+    "mcp[cli]>=1.0.0",
+    # Credentials base class for broker-issued tokens (auth.py).
+    "google-auth>=2.30",
+    # Local mode: the OAuth consent flow (scripts/authorize.py, auth.py).
     "google-auth-oauthlib>=1.2.0",
     "google-api-python-client>=2.150.0",
     "google-auth-httplib2>=0.2.0",
-    "uvicorn>=0.32.0",
-    # PDF attachment text extraction (extract_attachment_text). pdfplumber
-    # wraps pdfminer.six for text / layout / table extraction. pypdfium2
-    # ships a bundled PDFium shared library — no system poppler needed —
-    # and handles page rasterization for render_attachment_page. Pillow
-    # is a transitive dep of pypdfium2; pinned explicitly because the
-    # JPEG re-encode path uses it directly.
-    "pdfplumber>=0.11",
-    "pypdfium2>=4.30",
-    "pillow>=10.0",
     # OCR of scanned/image-only PDFs is delegated to the fleet xberg
     # service over HTTP (2026-08-03; was in-process rapidocr+onnxruntime,
     # ~220 MB of wheels) — httpx carries the xberg /extract call.

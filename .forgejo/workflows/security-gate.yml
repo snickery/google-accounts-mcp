@@ -1,0 +1,29 @@
+# Secret scan on every push and PR: the public snickery/secret-gate action. A
+# short ref, so it resolves through the forge's DEFAULT_ACTIONS_URL (GitHub)
+# and this public repo's workflow carries no instance hostname.
+name: security-gate
+
+on:
+  push:
+  pull_request:
+
+# Never cancel: Forgejo otherwise cancels a branch's queued runs of this
+# workflow when a newer push lands, and each run scans only its own push, so a
+# cancelled run is an unscanned push. (forgejo-ci-watch rescans any that are.)
+concurrency:
+  cancel-in-progress: false
+
+jobs:
+  secret-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout (full history for diff range)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Secret scan
+        uses: snickery/secret-gate@v1
+        with:
+          base: ${{ github.event.pull_request.base.sha || github.event.before }}
+          head: ${{ github.event.pull_request.head.sha || github.sha }}

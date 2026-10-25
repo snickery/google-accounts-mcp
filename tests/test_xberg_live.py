@@ -9,8 +9,7 @@ from pathlib import Path
 
 import httpx
 import pytest
-
-from google_accounts_mcp import pdf_read
+from mcp_server_kit import pdf as pdf_read
 
 FIXTURES = Path(__file__).parent / "fixtures"
 SCANNED = (FIXTURES / "scanned.pdf").read_bytes()
