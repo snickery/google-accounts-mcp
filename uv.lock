@@ -1,5 +1,5 @@
 version = 1
-revision = 3
+revision = 5
 requires-python = ">=3.12"
 resolution-markers = [
     "python_full_version >= '3.13'",
@@ -258,7 +258,7 @@ wheels = [
 
 [[package]]
 name = "google-accounts-mcp"
-version = "0.2.0"
+version = "0.2.1"
 source = { editable = "." }
 dependencies = [
     { name = "google-api-python-client" },
@@ -283,7 +283,7 @@ requires-dist = [
     { name = "google-auth-oauthlib", specifier = ">=1.2.0" },
     { name = "httpx", specifier = ">=0.27" },
     { name = "mcp", extras = ["cli"], specifier = ">=1.0.0" },
-    { name = "mcp-server-kit", extras = ["pdf"], specifier = ">=0.1,<0.2" },
+    { name = "mcp-server-kit", extras = ["pdf"], specifier = ">=0.1.1,<0.2" },
     { name = "pytest", marker = "extra == 'test'", specifier = ">=8.0" },
 ]
 provides-extras = ["test"]
@@ -519,16 +519,16 @@ cli = [
 
 [[package]]
 name = "mcp-server-kit"
-version = "0.1.0"
+version = "0.1.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "anyio" },
     { name = "mcp", extra = ["cli"] },
     { name = "uvicorn" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/0d/03/695c8126f80e9c11cd175564922f3180e631916e8e7c25ba05f324d419ad/mcp_server_kit-0.1.0.tar.gz", hash = "sha256:1f10c3fe692de68d326c6cd0eb4c9879ff0283485686b0f0177beaa25bed9cf4", size = 141442, upload-time = "2026-10-25T10:06:30.879Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/a0/ed/20a6e874109ac4236f632cb7c3e7bcc0af1902ff4fb7f42568b7a814f91b/mcp_server_kit-0.1.1.tar.gz", hash = "sha256:947d5dbc0386566683ebd56f17b217fbc02cc5ac38afa6d533e0b8c552f84b63", size = 142980, upload-time = "2026-10-25T11:42:15.438Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/73/d6/717fabc673050c787d998d8a169d077e1f7342b3e233e696859b7a2893f4/mcp_server_kit-0.1.0-py3-none-any.whl", hash = "sha256:7ea6f62a49062ba8fc4ab0464795a290b2f788f4806da995b732d8a4a07482be", size = 17347, upload-time = "2026-10-25T10:06:29.734Z" },
+    { url = "https://files.pythonhosted.org/packages/d6/47/67de85bbe89a40e6a9b5f3e1112576603d65bd8ceb73e72dc196ed75a5cf/mcp_server_kit-0.1.1-py3-none-any.whl", hash = "sha256:bcd96875501dd290d8424869494e9313486605cdbe6c77b3dca01d533ba13b68", size = 18441, upload-time = "2026-10-25T11:42:14.442Z" },
 ]
 
 [package.optional-dependencies]

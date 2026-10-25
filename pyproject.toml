@@ -1,6 +1,6 @@
 [project]
 name = "google-accounts-mcp"
-version = "0.2.0"
+version = "0.2.1"
 description = "Multi-account Google MCP server: Gmail, Calendar, Drive, Tasks, and Contacts"
 readme = "README.md"
 license = "MIT"
@@ -18,7 +18,7 @@ classifiers = [
 dependencies = [
     # The kit pins the MCP SDK range (mcp<2) for every server built on it.
     # [pdf]: pdfplumber + pypdfium2 + pillow for extract_attachment_text / render_attachment_page.
-    "mcp-server-kit[pdf]>=0.1,<0.2",
+    "mcp-server-kit[pdf]>=0.1.1,<0.2",
     "mcp[cli]>=1.0.0",
     # Credentials base class for broker-issued tokens (auth.py).
     "google-auth>=2.30",

@@ -14,7 +14,7 @@ from pathlib import Path
 import httplib2
 from google_auth_httplib2 import AuthorizedHttp
 from mcp_server_kit import pdf as pdf_read
-from mcp_server_kit.files import atomic_create
+from mcp_server_kit.files import atomic_create, list_files, purge_older, purge_one
 
 from google_accounts_mcp._google_api import (
     MediaInMemoryUpload,
@@ -112,85 +112,16 @@ class GmailClient:
     # Shared-mount writes: collision-safe -2/-3 naming, never overwrite (mcp_server_kit.files).
     _atomic_create = staticmethod(atomic_create)
 
+    # Shared-mount housekeeping (bodies of list_shared_files / purge_file / purge_shared_files)
+    # lives in mcp_server_kit.files, shared with notion-mcp and mail-archive-mcp.
     def list_shared_files(self, filter: str = "") -> str:
-        """List files currently staged in the cross-MCP shared mount
-        (SHARED_DIR). Use this to verify that download_attachment with
-        destination='shared' landed before handing the filename over to
-        notion-mcp. Only regular files at the top level are shown —
-        subdirectories are skipped (nothing should create them)."""
-        root = Path(SHARED_DIR)
-        if not root.exists():
-            return f"Shared dir {SHARED_DIR} does not exist."
-        files = [p for p in root.iterdir() if p.is_file()]
-        if filter:
-            files = [p for p in files if filter.lower() in p.name.lower()]
-        if not files:
-            suffix = f" matching '{filter}'" if filter else ""
-            return f"Shared mount is empty{suffix}."
-        lines = [f"{len(files)} file(s) in shared mount ({SHARED_DIR}):\n"]
-        for p in sorted(files):
-            data = p.read_bytes()
-            lines.append(
-                f"  • {p.name}  ({len(data)} bytes, "
-                f"sha256 {self._sha256(data)})  [shared:{p.name}]"
-            )
-        return "\n".join(lines)
+        return list_files(Path(SHARED_DIR), filter)
 
     def purge_file(self, filename: str) -> str:
-        """Delete a single file from SHARED_DIR by bare filename. Use
-        this after a successful cross-MCP handoff instead of waiting for
-        the daily TTL sweep. Traversal-safe: rejects any filename with
-        path components."""
-        safe_name = os.path.basename(filename)
-        if not safe_name or safe_name != filename:
-            raise ValueError(
-                f"Invalid filename '{filename}' — must be a bare filename."
-            )
-        target = Path(SHARED_DIR) / safe_name
-        if not target.is_file():
-            return f"No such file in shared mount: {safe_name}"
-        size = target.stat().st_size
-        target.unlink()
-        return f"Deleted {safe_name} ({size} bytes) from {SHARED_DIR}."
+        return purge_one(Path(SHARED_DIR), filename)
 
-    def purge_shared_files(
-        self, max_age_hours: float = 24.0, dry_run: bool = False,
-    ) -> str:
-        """Delete files in SHARED_DIR whose mtime is older than
-        ``max_age_hours``. Returns a human-readable summary. Set
-        ``dry_run=True`` to list what would be deleted without touching
-        the filesystem."""
-        import time
-        if max_age_hours < 0:
-            raise ValueError("max_age_hours must be >= 0")
-        root = Path(SHARED_DIR)
-        if not root.exists():
-            return f"Shared dir {SHARED_DIR} does not exist (nothing to purge)."
-        cutoff = time.time() - max_age_hours * 3600
-        # Only touch regular files — leave any subdirs alone. There are
-        # none today but an unrelated tool could create them, and we'd
-        # rather err on the side of leaving data alone.
-        victims = [
-            p for p in root.iterdir()
-            if p.is_file() and p.stat().st_mtime < cutoff
-        ]
-        if not victims:
-            return (
-                f"No files older than {max_age_hours}h in {SHARED_DIR} "
-                f"(dir contains {sum(1 for _ in root.iterdir())} entries)."
-            )
-        verb = "Would delete" if dry_run else "Deleted"
-        lines = [
-            f"{verb} {len(victims)} file(s) older than {max_age_hours}h "
-            f"from {SHARED_DIR}:"
-        ]
-        for p in sorted(victims):
-            age_h = (time.time() - p.stat().st_mtime) / 3600
-            size = p.stat().st_size
-            lines.append(f"  • {p.name}  ({size} bytes, age {age_h:.1f}h)")
-            if not dry_run:
-                p.unlink()
-        return "\n".join(lines)
+    def purge_shared_files(self, max_age_hours: float = 24.0, dry_run: bool = False) -> str:
+        return purge_older(Path(SHARED_DIR), max_age_hours, dry_run)
 
     def _read_local_bytes(self, local_filename: str) -> bytes:
         """Resolve a local_filename against SHARED_DIR then ATTACHMENTS_DIR
